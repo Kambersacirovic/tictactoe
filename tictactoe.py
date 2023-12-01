@@ -1,31 +1,36 @@
-board = [' ' for x in range(10)]
+bräde = [' ' for x in range(10)]
 
-def insertLetter(letter,pos):
-    board[pos] = letter
+# Den sätter in bokstaven i den rutan man valt
+def sättInBokstav(bokstav, pos):
+    bräde[pos] = bokstav
 
-def spaceIsFree(pos):
-    return board[pos] == ' '
+# En ruta är ledig
+def rutaÄrLedig(pos):
+    return bräde[pos] == ' '
 
-def printBoard(board):
+#Den skriver ut brädspelet
+def skrivUtBräde(bräde):
     print('   |   |   ')
-    print(' ' + board[1] + ' | ' + board[2] + ' | ' + board[3])
+    print(' ' + bräde[1] + ' | ' + bräde[2] + ' | ' + bräde[3])
     print('   |   |   ')
     print('------------')
     print('   |   |   ')
-    print(' ' + board[4] + ' | ' + board[5] + ' | ' + board[6])
+    print(' ' + bräde[4] + ' | ' + bräde[5] + ' | ' + bräde[6])
     print('   |   |   ')
     print('------------')
     print('   |   |   ')
-    print(' ' + board[7] + ' | ' + board[8] + ' | ' + board[9])
+    print(' ' + bräde[7] + ' | ' + bräde[8] + ' | ' + bräde[9])
     print('   |   |   ')
 
-def isBoardFull(board):
-    if board.count(' ') > 1:
+# När brädspelet är fullt 
+def ärBrädetFullt(bräde):
+    if bräde.count(' ') > 1:
         return False
     else:
         return True
 
-def IsWinner(b,l):
+# Funktionen är när du vinner
+def ärVinnare(b, l):
     return ((b[1] == l and b[2] == l and b[3] == l) or
     (b[4] == l and b[5] == l and b[6] == l) or
     (b[7] == l and b[8] == l and b[9] == l) or
@@ -35,99 +40,103 @@ def IsWinner(b,l):
     (b[1] == l and b[5] == l and b[9] == l) or
     (b[3] == l and b[5] == l and b[7] == l))
 
-def playerMove():
-    run = True
-    while run:
-        move = input("please select a position to enter the X between 1 to 9\n")
+# Spelaren ska välja ett drag alltså välja en siffra mellan 1 och 9
+def spelarDrag():
+    kör = True
+    while kör:
+        drag = input("Vänligen välj en position för att lägga till X mellan 1 och 9\n")
         try:
-            move = int(move)
-            if move > 0 and move < 10:
-                if spaceIsFree(move):
-                    run = False
-                    insertLetter('X' , move)
+            drag = int(drag)
+            if drag > 0 and drag < 10:
+                if rutaÄrLedig(drag):
+                    kör = False
+                    sättInBokstav('X', drag)
                 else:
-                    print('Sorry, this space is occupied')
+                    print('Förlåt, denna ruta är upptagen')
             else:
-                print('please type a number between 1 and 9')
+                print('Snälla skriv ett nummer mellan 1 och 9')
 
         except:
-            print('Please type a number')
+            print('Snälla lägg in ett nummer')
 
-def computerMove():
-    possibleMoves = [x for x , letter in enumerate(board) if letter == ' ' and x != 0  ]
-    move = 0
+# Funktion för datorns drag
+def datornsDrag():
+    möjligaDrag = [x for x, bokstav in enumerate(bräde) if bokstav == ' ' and x != 0]
+    drag = 0
 
-    for let in ['O' , 'X']:
-        for i in possibleMoves:
-            boardcopy = board[:]
-            boardcopy[i] = let
-            if IsWinner(boardcopy, let):
-                move = i
-                return move
+    for bokstav in ['O', 'X']:
+        for i in möjligaDrag:
+            brädeKopia = bräde[:]
+            brädeKopia[i] = bokstav
+            if ärVinnare(brädeKopia, bokstav):
+                drag = i
+                return drag
 
-    cornersOpen = []
-    for i in possibleMoves:
-        if i in [1 , 3 , 7 , 9]:
-            cornersOpen.append(i)
 
-    if len(cornersOpen) > 0:
-        move = selectRandom(cornersOpen)
-        return move
+    öppnaHörn = []
+    for i in möjligaDrag:
+        if i in [1, 3, 7, 9]:
+            öppnaHörn.append(i)
 
-    if 5 in possibleMoves:
-        move = 5
-        return move
+    if len(öppnaHörn) > 0:
+        drag = slumpa(öppnaHörn)
+        return drag
 
-    edgesOpen = []
-    for i in possibleMoves:
-        if i in [2,4,6,8]:
-            edgesOpen.append(i)
+    if 5 in möjligaDrag:
+        drag = 5
+        return drag
 
-    if len(edgesOpen) > 0:
-        move = selectRandom(edgesOpen)
-        return move
+    öppnaSidor = []
+    for i in möjligaDrag:
+        if i in [2, 4, 6, 8]:
+            öppnaSidor.append(i)
 
-def selectRandom(li):
+    if len(öppnaSidor) > 0:
+        drag = slumpa(öppnaSidor)
+        return drag
+
+def slumpa(lista):
     import random
-    ln = len(li)
-    r = random.randrange(0,ln)
-    return li[r]
+    ln = len(lista)
+    r = random.randrange(0, ln)
+    return lista[r]
 
-def main():
-    print("Welcome to the game!")
-    printBoard(board)
+def huvudprogram():
+    print("Välkommen till spelet!")
+    skrivUtBräde(bräde)
 
-    while not(isBoardFull(board)):
-        if not(IsWinner(board , 'O')):
-            playerMove()
-            printBoard(board)
+    while not(ärBrädetFullt(bräde)):
+        if not(ärVinnare(bräde, 'O')):
+            spelarDrag()
+            skrivUtBräde(bräde)
         else:
-            print("sorry you loose!")
+            print("Neej, du förlorade!")
             break
 
-        if not(IsWinner(board , 'X')):
-            move = computerMove()
-            if move == 0:
-                print(" ")
+        if not(ärVinnare(bräde, 'X')):
+            drag = datornsDrag()
+            if drag == 0:
+                print("Datorn gör inget drag.")
             else:
-                insertLetter('O' , move)
-                print('computer placed an o on position' , move , ':')
-                printBoard(board)
+                sättInBokstav('O', drag)
+                print('Datorn placerade en O på position', drag, ':')
+                skrivUtBräde(bräde)
         else:
-            print("you win!")
+            print("Ajajaj, du vann!")
             break
 
+    if ärBrädetFullt(bräde):
+        print("Oj, där blev det oavgjort")
 
-
-
-    if isBoardFull(board):
-        print("Tie game")
-
+# Huvudloopen för att spela spelet
 while True:
-    x = input("Do you want to play? Press y for yes or n for no (y/n)\n")
-    if x.lower() == 'y':
-        board = [' ' for x in range(10)]
+    val = input("Vill du spela? Tryck på y för ja eller n för nej (y/n)\n")
+    if val.lower() == 'y':
+        bräde = [' ' for x in range(10)]
         print('--------------------')
-        main()
-    else:
+        huvudprogram()
+    elif val.lower() == 'n':
+        print("Tack för att du spelade. Hej då!")
         break
+    else:
+        print("Ogiltigt val. Försök igen.")
